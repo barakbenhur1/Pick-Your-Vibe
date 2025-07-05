@@ -90,28 +90,6 @@ struct Provider: TimelineProvider {
     //    }
 }
 
-extension Provider {
-    @ViewBuilder
-    private var celebrationBurst: some View { CelebrationBurst() }
-    
-    struct CelebrationBurst: View {
-        let count = 12
-        let radius: CGFloat = 50
-        
-        var body: some View {
-            ZStack {
-                ForEach(0..<count, id: \.self) { i in
-                    Circle()
-                        .fill(Color(hue: Double(i)/Double(count), saturation: 0.8, brightness: 1))
-                        .frame(width: 10, height: 10)
-                        .offset(x: radius * cos(Double(i) * .pi * 2 / Double(count)),
-                                y: radius * sin(Double(i) * .pi * 2 / Double(count)))
-                }
-            }
-        }
-    }
-}
-
 struct VibeWidgetExtensionEntryView : View {
     var entry: Provider.Entry
     
