@@ -65,7 +65,7 @@ struct BounceModifier: ViewModifier {
             .offset(y: bounce ? 0 : height)
             .animation(.interpolatingSpring(duration: duration,
                                             bounce: height,
-                                            initialVelocity: 2 * height),
+                                            initialVelocity: 3 * height),
                        
                        value: bounce)
             .onAppear {

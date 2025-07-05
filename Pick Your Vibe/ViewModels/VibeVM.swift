@@ -11,6 +11,7 @@ import SwiftUI
 @Observable
 class VibeVM: VibeViewModel {
     var selectedVibe: Vibe?
+    var disabled: Bool = false
     var showSelection: Bool = false
     var animateVibe: Bool = false
     var didSelect: Bool = false
@@ -29,10 +30,13 @@ class VibeVM: VibeViewModel {
             count += 1
         }
         
+        disabled = true
+        
         complition(vibe)
         
-        QueueManager.shared.value.asyncAfter(wallDeadline: .now() + 2.4) { [weak self] in
+        QueueManager.shared.value.asyncAfter(wallDeadline: .now() + 0.8) { [weak self] in
             guard let self else { return }
+            disabled = false
             didSelect = false
         }
         

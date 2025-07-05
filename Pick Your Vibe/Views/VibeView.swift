@@ -29,6 +29,7 @@ struct VibeView<VM: VibeViewModel>: View {
                 vibeSelectionView(width: proxy.size.width)
                     .ignoresSafeArea()
             }
+            .disabled(vm.disabled)
         }
         .onAppear {
             let value = vibeManager.load()
@@ -75,7 +76,7 @@ extension VibeView {
             Text(vibe.name)
                 .font(.largeTitle)
                 .foregroundStyle(vibe.color.value)
-                .scale(duration: 1.6)
+                .scale()
             
             Text(getAttrString(count: vm.count))
                 .multilineTextAlignment(.center)
@@ -106,10 +107,12 @@ extension VibeView {
         let imageWrapper = ZStack {
             if vm.didSelect {
                 image
-                    .bounce(duration: 1.6)
+                    .bounce()
             } else {
                 image
-                    .scaleEffect(vm.animateVibe ? .init(width: 1.1, height: 1.1) : .init(width: 1, height: 1))
+                    .scaleEffect(vm.animateVibe ? .init(width: 1.1,
+                                                        height: 1.1) : .init(width: 1,
+                                                                             height: 1))
             }
         }
         

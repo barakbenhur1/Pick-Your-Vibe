@@ -90,6 +90,8 @@ extension VibeSelectionView {
         }
         .background { vm.selectedVibe == vibe ? Color.gray.opacity(0.4) : .clear }
         .clipShape(RoundedRectangle(cornerRadius: 10))
+        .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
     }
     
     @ViewBuilder

@@ -8,6 +8,7 @@
 protocol VibeViewModel: BaseViewModel {
     var selectedVibe: Vibe? { get set }
     var showSelection: Bool { get set }
+    var disabled: Bool { get set }
     var animateVibe: Bool { get set }
     var didSelect: Bool { get set }
     var toolTip: Bool { get set }
