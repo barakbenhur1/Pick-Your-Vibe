@@ -8,5 +8,5 @@
 import Foundation
 
 class VibeSelectionVM: ObservableObject {
-    @Published var selectedVibe: VibeData?
+    let vibes: Vibes = .items
 }

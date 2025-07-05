@@ -9,13 +9,13 @@ import SwiftUI
 
 typealias VibeSelection = (VibeData?) -> ()
 
-struct VibeSelectionView: View {
+struct VibeSelectionView<VM: VibeSelectionVM>: View {
     @EnvironmentObject private var queue: QueueManager
     
-    private let vibes: Vibes = .items
     @State private var disable: Bool = false
     @State private var selectedVibe: VibeData?
     
+    let vm: VM
     let didSelect: VibeSelection
     
     var body: some View {
@@ -72,7 +72,7 @@ extension VibeSelectionView {
     private var vibeMenu: some View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 44) {
-                ForEach(vibes, id: \.id) { vibe in
+                ForEach(vm.vibes, id: \.id) { vibe in
                     Button { selectVibe(vibe) }
                     label: { vibeButton(vibe)  }
                         .scaleEffect(selectedVibe == vibe ? 1.1 : 1)
@@ -122,7 +122,7 @@ struct VibeButton: ButtonStyle {
 }
 
 #Preview {
-    VibeSelectionView{ _  in }
+    VibeSelectionView(vm: VibeSelectionVM()) { _  in }
         .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         .environmentObject(QueueManager.shared)
 }

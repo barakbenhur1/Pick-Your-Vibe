@@ -11,6 +11,7 @@ import SwiftUITooltip
 struct VibeView<VM: VibeVM>: View {
     @EnvironmentObject private var queue: QueueManager
     @EnvironmentObject private var vibeManager: VibeManager
+    @State private var selectedVibe: VibeData?
     
     @ObservedObject var vm: VM
     
@@ -21,7 +22,7 @@ struct VibeView<VM: VibeVM>: View {
                     .resizable()
                     .ignoresSafeArea()
                 ZStack {
-                    if let selectedVibe = vm.selectedVibe { vibe(selectedVibe) }
+                    if let selectedVibe { vibe(selectedVibe) }
                     else { emptyState }
                 }
                 .onTapGesture { show(true) }
@@ -33,7 +34,7 @@ struct VibeView<VM: VibeVM>: View {
         }
         .onAppear {
             let value = vibeManager.load()
-            vm.selectedVibe = value?.vibe
+            selectedVibe = value?.vibe
             vm.count = value?.count ?? 0
         }
     }
@@ -52,9 +53,9 @@ struct VibeView<VM: VibeVM>: View {
     
     private func selectVibe(_ vibe: VibeData?) {
         if let vibe {
-            guard vm.selectedVibe != vibe else { return show(false) }
+            guard selectedVibe != vibe else { return show(false) }
             vibeManager.save(vibe: vibe)
-            vm.selectedVibe = vibe
+            selectedVibe = vibe
             
             withAnimation {
                 vm.didSelect = true
@@ -112,7 +113,7 @@ extension VibeView {
     
     @ViewBuilder
     private func vibeSelectionView(width: CGFloat) -> some View {
-        VibeSelectionView { vibe in selectVibe(vibe) }
+        VibeSelectionView(vm: VibeSelectionVM()) { vibe in selectVibe(vibe) }
             .opacity(vm.showSelection ? 1 : 0)
             .clipShape(RoundedRectangle(cornerRadius: vm.showSelection ? 0 : width / 2))
     }
