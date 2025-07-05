@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-typealias VibeSelection = (Vibe?) -> ()
+typealias VibeSelection = (VibeData?) -> ()
 
 struct VibeSelectionView: View {
     @EnvironmentObject private var queue: QueueManager
     
-    private let vibes = VibeDataSource()
+    private let vibes: Vibes = .items
     @State private var disable: Bool = false
-    @State private var selected: Vibe?
+    @State private var selectedVibe: VibeData?
     
     let didSelect: VibeSelection
     
@@ -32,13 +32,13 @@ struct VibeSelectionView: View {
         .disabled(disable)
     }
     
-    private func selectVibe(_ vibe: Vibe) {
-        withAnimation(.smooth(duration: 0.2)) { selected = vibe }
+    private func selectVibe(_ vibe: VibeData) {
+        withAnimation(.smooth(duration: 0.2)) { selectedVibe = vibe }
         disable = true
         queue.value.asyncAfter(wallDeadline: .now() + 0.2) {
-            guard let selected else { return }
-            let value = selected
-            withAnimation(.smooth(duration: 0.2)) { self.selected = nil }
+            guard let selectedVibe else { return }
+            let value = selectedVibe
+            withAnimation(.smooth(duration: 0.2)) { self.selectedVibe = nil }
             queue.value.asyncAfter(wallDeadline: .now() + 0.2) {
                 didSelect(value)
                 self.disable = false
@@ -72,10 +72,10 @@ extension VibeSelectionView {
     private var vibeMenu: some View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 44) {
-                ForEach(vibes.items, id: \.id) { vibe in
+                ForEach(vibes, id: \.id) { vibe in
                     Button { selectVibe(vibe) }
                     label: { vibeButton(vibe)  }
-                        .scaleEffect(selected == vibe ? 1.1 : 1)
+                        .scaleEffect(selectedVibe == vibe ? 1.1 : 1)
                         .padding(.horizontal, 20)
                         .buttonStyle(VibeButton())
                 }
@@ -86,7 +86,7 @@ extension VibeSelectionView {
     }
     
     @ViewBuilder
-    private func vibeButton(_ vibe: Vibe) -> some View {
+    private func vibeButton(_ vibe: VibeData) -> some View {
         ZStack {
             HStack {
                 Text(vibe.image)
@@ -95,12 +95,12 @@ extension VibeSelectionView {
                 Spacer()
             }
             Text(vibe.name)
-                .foregroundStyle(selected == vibe ? .white : vibe.color.value)
+                .foregroundStyle(selectedVibe == vibe ? .white : vibe.color.value)
                 .font(.title)
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.1)
         }
-        .background { selected == vibe ? Color.gray.opacity(0.4) : .clear }
+        .background { selectedVibe == vibe ? Color.gray.opacity(0.4) : .clear }
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
     

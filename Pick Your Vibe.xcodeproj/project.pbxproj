@@ -56,7 +56,8 @@
 		4F76796F2E1823A600A9DDD0 /* Exceptions for "Pick Your Vibe" folder in "VibeWidgetExtensionExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				DataSources/VibeDataSource.swift,
+				DataSources/VibeData.swift,
+				DataSources/Vibes.swift,
 				Modifiers/Modifiers.swift,
 			);
 			target = 4F7679512E18215800A9DDD0 /* VibeWidgetExtensionExtension */;

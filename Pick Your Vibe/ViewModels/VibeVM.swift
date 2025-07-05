@@ -8,7 +8,7 @@
 import Foundation
 
 class VibeVM: ObservableObject {
-    @Published var selectedVibe: Vibe?
+    @Published var selectedVibe: VibeData?
     @Published var showSelection: Bool = false
     @Published var animateVibe: Bool = false
     @Published var didSelect: Bool = false

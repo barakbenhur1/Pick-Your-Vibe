@@ -50,7 +50,7 @@ struct VibeView<VM: VibeVM>: View {
         }
     }
     
-    private func selectVibe(_ vibe: Vibe?) {
+    private func selectVibe(_ vibe: VibeData?) {
         if let vibe {
             guard vm.selectedVibe != vibe else { return show(false) }
             vibeManager.save(vibe: vibe)
@@ -86,7 +86,7 @@ struct VibeView<VM: VibeVM>: View {
 
 extension VibeView {
     @ViewBuilder
-    private func vibe(_ vibe: Vibe) -> some View {
+    private func vibe(_ vibe: VibeData) -> some View {
         VStack(spacing: 20) {
             Text("Your vibe\ntoday")
                 .multilineTextAlignment(.center)
