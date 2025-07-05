@@ -12,7 +12,7 @@ struct VibeView<VM: VibeViewModel>: View {
     @EnvironmentObject private var queue: QueueManager
     @EnvironmentObject private var vibeManager: VibeManager
     
-    @State var vm: VM
+    @ObservedObject var vm: VM
     
     var body: some View {
         GeometryReader { proxy in

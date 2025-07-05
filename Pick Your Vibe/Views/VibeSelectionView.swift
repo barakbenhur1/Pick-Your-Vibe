@@ -10,7 +10,7 @@ import SwiftUI
 typealias VibeSelection = (Vibe?) -> ()
 
 struct VibeSelectionView<VM: VibeSelectionViewModel>: View {
-    let vm: VM
+    @ObservedObject var vm: VM
     let didSelect: VibeSelection
     
     var body: some View {
