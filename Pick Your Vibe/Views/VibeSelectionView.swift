@@ -11,7 +11,7 @@ typealias VibeSelection = (Vibe?) -> ()
 
 struct VibeSelectionView<VM: VibeSelectionViewModel>: View {
     @ObservedObject var vm: VM
-    let didSelect: VibeSelection
+    @Binding var vibe: Vibe?
     
     var body: some View {
         ZStack {
@@ -27,10 +27,14 @@ struct VibeSelectionView<VM: VibeSelectionViewModel>: View {
         .disabled(vm.disable)
     }
     
-    private func selectVibe(_ vibe: Vibe) {
-        vm.selectVibe(vibe) { value in
+    private func selectVibe(_ value: Vibe) {
+        vm.selectVibe(value) { value in
             guard let value else { return }
-            didSelect(value)
+            if vibe == value {
+                vibe = nil
+            } else {
+                vibe = value
+            }
         }
     }
 }
@@ -43,7 +47,7 @@ extension VibeSelectionView {
                 .font(.title)
             HStack {
                 Button {
-                    didSelect(nil)
+                   vibe = nil
                 } label: {
                     Image(systemName: "arrow.left")
                         .foregroundStyle(.black)
@@ -112,7 +116,8 @@ struct VibeButton: ButtonStyle {
 }
 
 #Preview {
-    VibeSelectionView(vm: VibeSelectionVM()){ _  in }
+    VibeSelectionView(vm: VibeSelectionVM(),
+                      vibe: .constant(nil))
         .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
 

@@ -13,11 +13,12 @@ struct VibeView<VM: VibeViewModel>: View {
     @EnvironmentObject private var vibeManager: VibeManager
     
     @ObservedObject var vm: VM
+    @State private var vibe: Vibe?
     
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-               Image("background")
+                Image("background")
                     .resizable()
                     .ignoresSafeArea()
                 ZStack {
@@ -31,8 +32,14 @@ struct VibeView<VM: VibeViewModel>: View {
             }
             .disabled(vm.disabled)
         }
+        .onChange(of: vibe) {
+            vm.selectVibe(vibe) { _ in
+                show(false)
+            }
+        }
         .onAppear {
             let value = vibeManager.load()
+            vibe = value?.vibe
             vm.selectedVibe = value?.vibe
             vm.count = value?.count ?? 0
         }
@@ -88,11 +95,8 @@ extension VibeView {
     
     @ViewBuilder
     private func vibeSelectionView(width: CGFloat) -> some View {
-        VibeSelectionView(vm: VibeSelectionVM()) { vibe in
-            vm.selectVibe(vibe) { _ in
-                show(false)
-            }
-        }
+        VibeSelectionView(vm: VibeSelectionVM(),
+                          vibe: $vibe)
         .opacity(vm.showSelection ? 1 : 0)
         .clipShape(RoundedRectangle(cornerRadius: vm.showSelection ? 0 : width / 2))
     }
