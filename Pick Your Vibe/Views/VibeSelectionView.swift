@@ -30,11 +30,8 @@ struct VibeSelectionView<VM: VibeSelectionViewModel>: View {
     private func selectVibe(_ value: Vibe) {
         vm.selectVibe(value) { value in
             guard let value else { return }
-            if vibe == value {
-                vibe = nil
-            } else {
-                vibe = value
-            }
+            if vibe == value { vibe = nil }
+            else { vibe = value }
         }
     }
 }
