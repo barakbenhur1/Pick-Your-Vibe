@@ -33,18 +33,20 @@ extension VibeView {
     @ViewBuilder
     private func vibe(_ vibe: Vibe) -> some View {
         VStack(spacing: 20) {
-            Text("Your vibe\ntoday")
+            Text("your vibe\ntoday")
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.black)
                 .font(.largeTitle)
+                .foregroundStyle(.black)
+                .shadow(radius: 2)
                 .padding(.top, 160)
-                .padding(.bottom, 60)
+                .padding(.bottom, 20)
             
             image(vibe.image)
             
             Text(vibe.name)
                 .font(.largeTitle)
                 .foregroundStyle(vibe.color.value)
+                .minimumScaleFactor(0.1)
                 .scale()
             
             Text(vm.getAttrString(count: vm.count))

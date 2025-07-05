@@ -14,8 +14,6 @@ struct VibeEntry: TimelineEntry {
 }
 
 struct Provider: TimelineProvider {
-    @State private var current: VibeTracker?
-    
     func placeholder(in context: Context) -> VibeEntry {
         if let item = VibeManager.shared.load() {
             let tracker: VibeTracker = .init(vibe: item.vibe,
@@ -45,40 +43,44 @@ struct Provider: TimelineProvider {
         if let item = VibeManager.shared.load() {
             let tracker: VibeTracker = .init(vibe: item.vibe,
                                              count: item.count)
-            let entry = VibeEntry(date: .now.addingTimeInterval(1.5),
+            
+            let entry = VibeEntry(date: .now.addingTimeInterval(2.4),
                                   tracker: tracker)
+            
             var entries: [VibeEntry] = [entry]
             
-            if item.count > 0 && item.count % 7 == 0 && current != item {
-                current = item
-                
+            if item.count > 0 && item.count % 7 == 0 {
+                let text = "you had 7 vibes"
                 entries.append(.init(date: .now,
-                                     tracker: .init(vibe: .init(name: "-- You had 7 moods --",
+                                     tracker: .init(vibe: .init(name: "⭐⭐ \(text) ⭐⭐",
                                                                 image: "",
                                                                 color: .init(uiColor: .magenta)),
                                                     count: 0)))
                 
-                entries.append(.init(date: .now + 0.5,
-                                     tracker: .init(vibe: .init(name: "- You had 7 moods -",
+                entries.append(.init(date: .now + 0.8,
+                                     tracker: .init(vibe: .init(name: "⭐ \(text) ⭐",
                                                                 image: "",
-                                                                color: .init(uiColor: .magenta)),
+                                                                color: .init(uiColor: .red)),
                                                     count: 0)))
                 
-                entries.append(.init(date: .now + 1,
-                                     tracker: .init(vibe: .init(name: "You had 7 moods",
+                entries.append(.init(date: .now + 1.8,
+                                     tracker: .init(vibe: .init(name: text,
                                                                 image: "",
-                                                                color: .init(uiColor: .magenta)),
+                                                                color: .init(uiColor: .systemIndigo)),
                                                     count: 0)))
             }
             
             let timeline = Timeline(entries: entries,
                                     policy: .atEnd)
+            
             completion(timeline)
         } else {
             let entry = VibeEntry(date: .now,
                                   tracker: nil)
+            
             let timeline = Timeline(entries: [entry],
                                     policy: .atEnd)
+            
             completion(timeline)
         }
     }
@@ -86,6 +88,28 @@ struct Provider: TimelineProvider {
     //    func relevances() async -> WidgetRelevances<Void> {
     //        // Generate a list containing the contexts this widget is relevant in.
     //    }
+}
+
+extension Provider {
+    @ViewBuilder
+    private var celebrationBurst: some View { CelebrationBurst() }
+    
+    struct CelebrationBurst: View {
+        let count = 12
+        let radius: CGFloat = 50
+        
+        var body: some View {
+            ZStack {
+                ForEach(0..<count, id: \.self) { i in
+                    Circle()
+                        .fill(Color(hue: Double(i)/Double(count), saturation: 0.8, brightness: 1))
+                        .frame(width: 10, height: 10)
+                        .offset(x: radius * cos(Double(i) * .pi * 2 / Double(count)),
+                                y: radius * sin(Double(i) * .pi * 2 / Double(count)))
+                }
+            }
+        }
+    }
 }
 
 struct VibeWidgetExtensionEntryView : View {
@@ -141,34 +165,32 @@ extension VibeWidgetExtension {
 extension VibeWidgetExtensionEntryView {
     @ViewBuilder
     private func vibe(_ value: VibeTracker) -> some View {
-        VStack(spacing: 4) {
+        VStack {
+            let textView = Text(value.vibe.name)
+                .multilineTextAlignment(.center)
+                .font(.custom("", size: 18))
+                .foregroundStyle(value.vibe.color.value)
+                .padding(.bottom, 8)
+                .minimumScaleFactor (0.1)
+            
             if value.count > 0 {
-                Text("Your vibe today")
+                Text("your vibe today")
                     .multilineTextAlignment(.center)
-                    .minimumScaleFactor (0.1)
                     .foregroundStyle(.black)
+                    .shadow(radius: 2)
+                    .minimumScaleFactor (0.1)
                 
                 Link(destination: URL(string: "widget://select")!) {
                     Text(value.vibe.image)
                         .multilineTextAlignment(.center)
                         .font(.custom("", size: 100))
-                        .minimumScaleFactor (0.1)
                         .shadow(radius: 4)
                         .padding(.vertical, 8)
+                        .minimumScaleFactor (0.16)
                     
-                    Text(value.vibe.name)
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(value.vibe.color.value)
-                        .minimumScaleFactor (0.1)
-                        .padding(.bottom, 8)
+                    textView
                 }
-            } else {
-                Text(value.vibe.name)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(value.vibe.color.value)
-                    .minimumScaleFactor (0.1)
-                    .padding(.bottom, 8)
-            }
+            } else { textView }
             
             if value.count > 0 {
                 Text(getAttrString(count: value.count))

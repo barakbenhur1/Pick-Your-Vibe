@@ -86,8 +86,9 @@ extension VibeSelectionView {
             
             Text(vibe.name)
                 .foregroundStyle(vm.selectedVibe == vibe ? .white : vibe.color.value)
-                .font(.title)
+                .font(.largeTitle)
                 .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
                 .minimumScaleFactor(0.1)
         }
         .background { vm.selectedVibe == vibe ? Color.gray.opacity(0.4) : .clear }

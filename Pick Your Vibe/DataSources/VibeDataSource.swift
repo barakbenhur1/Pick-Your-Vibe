@@ -9,16 +9,16 @@ typealias Vibes = [Vibe]
 
 extension Vibes {
     static let vibes: [Vibe] =
-    [.init(name: "Focus",
+    [.init(name: "focus",
            image: "🧠",
            color: .init(uiColor: .purple)),
-     .init(name: "Power",
+     .init(name: "power",
            image: "💪",
            color: .init(uiColor: .orange)),
-     .init(name: "Chill",
+     .init(name: "chill",
            image: "😴",
            color: .init(uiColor: .blue)),
-     .init(name: "Joy",
+     .init(name: "joy",
            image: "😂",
            color: .init(uiColor: .systemPink))]
 }
