@@ -11,12 +11,13 @@ typealias VibeSelection = (Vibe?) -> ()
 
 struct VibeSelectionView<VM: VibeSelectionViewModel>: View {
     @ObservedObject var vm: VM
-    @Binding var vibe: Vibe?
+    let didSelect: (_ vibe: Vibe?) -> ()
     
     var body: some View {
         ZStack {
             background
                 .ignoresSafeArea()
+            
             VStack {
                 topView
                 vibeMenu
@@ -28,11 +29,7 @@ struct VibeSelectionView<VM: VibeSelectionViewModel>: View {
     }
     
     private func selectVibe(_ value: Vibe) {
-        vm.selectVibe(value) { value in
-            guard let value else { return }
-            if vibe == value { vibe = nil }
-            else { vibe = value }
-        }
+        vm.selectVibe(value) { value in didSelect(value) }
     }
 }
 
@@ -42,14 +39,15 @@ extension VibeSelectionView {
         ZStack {
             Text("Pick Vibe")
                 .font(.title)
+            
             HStack {
-                Button {
-                   vibe = nil
-                } label: {
+                Button { didSelect(nil) }
+                label: {
                     Image(systemName: "arrow.left")
                         .foregroundStyle(.black)
                         .font(.title)
                 }
+                
                 Spacer()
             }
         }
@@ -68,6 +66,7 @@ extension VibeSelectionView {
                         .padding(.horizontal, 20)
                         .buttonStyle(VibeButton())
                 }
+                
                 Spacer()
             }
         }
@@ -81,8 +80,10 @@ extension VibeSelectionView {
                 Text(vibe.image)
                     .font(.custom("", size: 32))
                     .minimumScaleFactor(0.1)
+                
                 Spacer()
             }
+            
             Text(vibe.name)
                 .foregroundStyle(vm.selectedVibe == vibe ? .white : vibe.color.value)
                 .font(.title)
@@ -113,8 +114,7 @@ struct VibeButton: ButtonStyle {
 }
 
 #Preview {
-    VibeSelectionView(vm: VibeSelectionVM(),
-                      vibe: .constant(nil))
+    VibeSelectionView(vm: VibeSelectionVM()) { _ in }
         .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
 

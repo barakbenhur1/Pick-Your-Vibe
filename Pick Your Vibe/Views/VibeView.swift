@@ -9,61 +9,23 @@ import SwiftUI
 import SwiftUITooltip
 
 struct VibeView<VM: VibeViewModel>: View {
-    @EnvironmentObject private var queue: QueueManager
-    @EnvironmentObject private var vibeManager: VibeManager
-    
     @ObservedObject var vm: VM
-    @State private var vibe: Vibe?
     
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                Image("background")
-                    .resizable()
+                background
                     .ignoresSafeArea()
-                ZStack {
-                    if let selectedVibe = vm.selectedVibe { vibe(selectedVibe) }
-                    else { emptyState }
-                }
-                .onTapGesture { show(true) }
+                
+                content
+                    .onTapGesture { vm.show(true) }
                 
                 vibeSelectionView(width: proxy.size.width)
                     .ignoresSafeArea()
             }
             .disabled(vm.disabled)
         }
-        .onChange(of: vibe) {
-            vm.selectVibe(vibe) { _ in
-                show(false)
-            }
-        }
-        .onAppear {
-            let value = vibeManager.load()
-            vibe = value?.vibe
-            vm.selectedVibe = value?.vibe
-            vm.count = value?.count ?? 0
-        }
-    }
-    
-    private func show(_ value: Bool) {
-        var time: CGFloat = 0
-        if value {
-            time = 0.2
-            withAnimation(.easeInOut(duration: time)) { vm.animateVibe = true }
-        }
-        queue.value.asyncAfter(deadline: .now() + time) {
-            vm.animateVibe = false
-            withAnimation(.easeInOut(duration: 0.3)) { vm.showSelection = value }
-        }
-    }
-    
-    private func getAttrString(count: Int) -> AttributedString {
-        let one: AttributedString = "You’ve picked"
-        var two: AttributedString = AttributedString("\(count)")
-        two.foregroundColor = .red
-        two.font = .body.bold()
-        let three: AttributedString = "vibes"
-        return one + " " + two + " " + three
+        .onAppear { vm.initalValue() }
     }
 }
 
@@ -85,7 +47,7 @@ extension VibeView {
                 .foregroundStyle(vibe.color.value)
                 .scale()
             
-            Text(getAttrString(count: vm.count))
+            Text(vm.getAttrString(count: vm.count))
                 .multilineTextAlignment(.center)
                 .font(.body)
             
@@ -95,8 +57,11 @@ extension VibeView {
     
     @ViewBuilder
     private func vibeSelectionView(width: CGFloat) -> some View {
-        VibeSelectionView(vm: VibeSelectionVM(),
-                          vibe: $vibe)
+        VibeSelectionView(vm: VibeSelectionVM()) { vibe in
+            vm.selectVibe(vibe) { _ in
+                vm.show(false)
+            }
+        }
         .opacity(vm.showSelection ? 1 : 0)
         .clipShape(RoundedRectangle(cornerRadius: vm.showSelection ? 0 : width / 2))
     }
@@ -129,6 +94,14 @@ extension VibeView {
     }
     
     @ViewBuilder
+    private var content: some View {
+        ZStack {
+            if let selectedVibe = vm.selectedVibe { vibe(selectedVibe) }
+            else { emptyState }
+        }
+    }
+    
+    @ViewBuilder
     private var emptyState: some View {
         VStack {
             Text("No vibe yet")
@@ -143,9 +116,14 @@ extension VibeView {
                 .blink()
         }
     }
+    
+    @ViewBuilder
+    private var background: some View {
+        Image("background")
+            .resizable()
+    }
 }
 
 #Preview {
     VibeView(vm: VibeVM())
-        .environmentObject(QueueManager.shared)
 }

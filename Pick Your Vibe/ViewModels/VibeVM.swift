@@ -10,6 +10,12 @@ import SwiftUI
 
 @Observable
 class VibeVM: VibeViewModel {
+    func initalValue() {
+        let value = VibeManager.shared.load()
+        selectedVibe = value?.vibe
+        count = value?.count ?? 0
+    }
+    
     var selectedVibe: Vibe?
     var disabled: Bool = false
     var showSelection: Bool = false
@@ -44,5 +50,29 @@ class VibeVM: VibeViewModel {
             guard let self else { return }
             toolTip = false
         }
+    }
+    
+    func show(_ value: Bool) {
+        var time: CGFloat = 0
+        
+        if value {
+            time = 0.2
+            withAnimation(.easeInOut(duration: time)) { animateVibe = true }
+        }
+        
+        QueueManager.shared.value.asyncAfter(deadline: .now() + time) { [weak self] in
+            guard let self else { return }
+            animateVibe = false
+            withAnimation(.easeInOut(duration: 0.3)) { self.showSelection = value }
+        }
+    }
+    
+    func getAttrString(count: Int) -> AttributedString {
+        let one: AttributedString = "You’ve picked"
+        var two: AttributedString = AttributedString("\(count)")
+        two.foregroundColor = .red
+        two.font = .body.bold()
+        let three: AttributedString = "vibes"
+        return one + " " + two + " " + three
     }
 }
