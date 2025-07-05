@@ -20,14 +20,12 @@ struct VibeSelectionView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(colors: [.blue, .cyan, .teal],
-                           startPoint: .bottomTrailing,
-                           endPoint: .topLeading).ignoresSafeArea()
+            background
+                .ignoresSafeArea()
             VStack {
                 topView
                 vibeMenu
                     .padding(.top, 50)
-                    .padding()
             }
             .padding(.top, 50)
         }
@@ -55,15 +53,15 @@ extension VibeSelectionView {
         ZStack {
             Text("Pick Vibe")
                 .font(.title)
-            Button {
-                didSelect(nil)
-            } label: {
-                HStack {
+            HStack {
+                Button {
+                    didSelect(nil)
+                } label: {
                     Image(systemName: "arrow.left")
                         .foregroundStyle(.black)
                         .font(.title)
-                    Spacer()
                 }
+                Spacer()
             }
         }
         .padding(.top, 20)
@@ -89,16 +87,28 @@ extension VibeSelectionView {
     
     @ViewBuilder
     private func vibeButton(_ vibe: Vibe) -> some View {
-        HStack(spacing: 104) {
-            Text(vibe.image)
-                .font(.custom("", size: 32))
+        ZStack {
+            HStack {
+                Text(vibe.image)
+                    .font(.custom("", size: 32))
+                    .minimumScaleFactor(0.1)
+                Spacer()
+            }
             Text(vibe.name)
                 .foregroundStyle(selected == vibe ? .white : vibe.color.value)
-                .font(.custom("", size: 32))
-            Spacer()
+                .font(.title)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.1)
         }
         .background { selected == vibe ? Color.gray.opacity(0.4) : .clear }
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    
+    @ViewBuilder
+    private var background: some View {
+        LinearGradient(colors: [.blue, .cyan, .teal],
+                       startPoint: .bottomTrailing,
+                       endPoint: .topLeading)
     }
 }
 
