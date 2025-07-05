@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct VibeData: Codable, Equatable, Identifiable {
-    static func == (lhs: VibeData, rhs: VibeData) -> Bool {
+struct Vibe: Codable, Equatable, Identifiable {
+    static func == (lhs: Vibe, rhs: Vibe) -> Bool {
         return lhs.name == rhs.name && lhs.image == rhs.image && lhs.color == rhs.color
     }
     
@@ -18,7 +18,7 @@ struct VibeData: Codable, Equatable, Identifiable {
     let color: MyColor
 }
 
-extension VibeData {
+extension Vibe {
     struct MyColor : Codable, Equatable {
         var red : CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 0.0
         
@@ -35,3 +35,4 @@ extension VibeData {
         }
     }
 }
+

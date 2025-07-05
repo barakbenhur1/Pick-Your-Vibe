@@ -1,14 +1,14 @@
 //
-//  Vibes.swift
+//  VibeDataSource.swift
 //  Pick Your Vibe
 //
 //  Created by Barak Ben Hur on 05/07/2025.
 //
 
-typealias Vibes = [VibeData]
+typealias Vibes = [Vibe]
 
 extension Vibes {
-    static let items: Vibes =
+    static let vibes: [Vibe] =
     [.init(name: "Focus",
            image: "🧠",
            color: .init(uiColor: .purple)),

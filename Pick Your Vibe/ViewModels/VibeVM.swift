@@ -6,11 +6,39 @@
 //
 
 import Foundation
+import SwiftUI
 
-class VibeVM: ObservableObject {
-    @Published var showSelection: Bool = false
-    @Published var animateVibe: Bool = false
-    @Published var didSelect: Bool = false
-    @Published var toolTip: Bool = false
-    @Published var count: Int = 0
+@Observable
+class VibeVM: VibeViewModel {
+    var selectedVibe: Vibe?
+    var showSelection: Bool = false
+    var animateVibe: Bool = false
+    var didSelect: Bool = false
+    var toolTip: Bool = false
+    var count: Int = 0
+    
+    func selectVibe(_ vibe: Vibe?, complition: @escaping (_ value: Vibe?) -> ()) {
+        guard let vibe else { return complition(nil) }
+        guard selectedVibe != vibe else { return complition(nil) }
+        VibeManager.shared.save(vibe: vibe)
+        selectedVibe = vibe
+        
+        withAnimation {
+            didSelect = true
+            toolTip = count == 0
+            count += 1
+        }
+        
+        complition(vibe)
+        
+        QueueManager.shared.value.asyncAfter(wallDeadline: .now() + 2.4) { [weak self] in
+            guard let self else { return }
+            didSelect = false
+        }
+        
+        QueueManager.shared.value.asyncAfter(wallDeadline: .now() + 4) { [weak self] in
+            guard let self else { return }
+            toolTip = false
+        }
+    }
 }

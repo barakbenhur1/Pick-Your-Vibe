@@ -9,7 +9,7 @@ import Foundation
 import WidgetKit
 
 struct VibeTracker: Codable, Equatable {
-    let vibe: VibeData
+    let vibe: Vibe
     let count: Int
 }
 
@@ -24,7 +24,7 @@ class VibeManager: ObservableObject {
         key = "vibe"
     }
     
-    func save(vibe: VibeData) {
+    func save(vibe: Vibe) {
         let currentCount = load()?.count
         let vibeTracker = VibeTracker(vibe: vibe, count: currentCount == nil ? 1 : currentCount! + 1)
         guard let data = try? JSONEncoder().encode(vibeTracker) else { return }

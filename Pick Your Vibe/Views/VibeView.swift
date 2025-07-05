@@ -8,12 +8,11 @@
 import SwiftUI
 import SwiftUITooltip
 
-struct VibeView<VM: VibeVM>: View {
+struct VibeView<VM: VibeViewModel>: View {
     @EnvironmentObject private var queue: QueueManager
     @EnvironmentObject private var vibeManager: VibeManager
-    @State private var selectedVibe: VibeData?
     
-    @ObservedObject var vm: VM
+    @State var vm: VM
     
     var body: some View {
         GeometryReader { proxy in
@@ -22,19 +21,18 @@ struct VibeView<VM: VibeVM>: View {
                     .resizable()
                     .ignoresSafeArea()
                 ZStack {
-                    if let selectedVibe { vibe(selectedVibe) }
+                    if let selectedVibe = vm.selectedVibe { vibe(selectedVibe) }
                     else { emptyState }
                 }
                 .onTapGesture { show(true) }
                 
                 vibeSelectionView(width: proxy.size.width)
                     .ignoresSafeArea()
-                    .environmentObject(queue)
             }
         }
         .onAppear {
             let value = vibeManager.load()
-            selectedVibe = value?.vibe
+            vm.selectedVibe = value?.vibe
             vm.count = value?.count ?? 0
         }
     }
@@ -51,30 +49,6 @@ struct VibeView<VM: VibeVM>: View {
         }
     }
     
-    private func selectVibe(_ vibe: VibeData?) {
-        if let vibe {
-            guard selectedVibe != vibe else { return show(false) }
-            vibeManager.save(vibe: vibe)
-            selectedVibe = vibe
-            
-            withAnimation {
-                vm.didSelect = true
-                vm.toolTip = vm.count == 0
-                vm.count += 1
-            }
-            
-            queue.value.asyncAfter(wallDeadline: .now() + 2.4) {
-                vm.didSelect = false
-            }
-            
-            queue.value.asyncAfter(wallDeadline: .now() + 4) {
-                vm.toolTip = false
-            }
-        }
-        
-        show(false)
-    }
-    
     private func getAttrString(count: Int) -> AttributedString {
         let one: AttributedString = "You’ve picked"
         var two: AttributedString = AttributedString("\(count)")
@@ -87,7 +61,7 @@ struct VibeView<VM: VibeVM>: View {
 
 extension VibeView {
     @ViewBuilder
-    private func vibe(_ vibe: VibeData) -> some View {
+    private func vibe(_ vibe: Vibe) -> some View {
         VStack(spacing: 20) {
             Text("Your vibe\ntoday")
                 .multilineTextAlignment(.center)
@@ -113,9 +87,13 @@ extension VibeView {
     
     @ViewBuilder
     private func vibeSelectionView(width: CGFloat) -> some View {
-        VibeSelectionView(vm: VibeSelectionVM()) { vibe in selectVibe(vibe) }
-            .opacity(vm.showSelection ? 1 : 0)
-            .clipShape(RoundedRectangle(cornerRadius: vm.showSelection ? 0 : width / 2))
+        VibeSelectionView(vm: VibeSelectionVM()) { vibe in
+            vm.selectVibe(vibe) { _ in
+                show(false)
+            }
+        }
+        .opacity(vm.showSelection ? 1 : 0)
+        .clipShape(RoundedRectangle(cornerRadius: vm.showSelection ? 0 : width / 2))
     }
     
     @ViewBuilder
