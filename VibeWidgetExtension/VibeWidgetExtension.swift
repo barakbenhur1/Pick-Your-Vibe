@@ -146,7 +146,7 @@ extension VibeWidgetExtensionEntryView {
         VStack {
             let textView = Text(value.vibe.name)
                 .multilineTextAlignment(.center)
-                .font(.custom("", size: 18))
+                .font(.title2)
                 .foregroundStyle(value.vibe.color.value)
                 .padding(.bottom, 8)
                 .minimumScaleFactor (0.1)
