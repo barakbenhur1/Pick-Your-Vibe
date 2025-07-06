@@ -51,7 +51,7 @@ struct Provider: TimelineProvider {
             
             if item.count > 0 && item.count % 7 == 0 {
                 let text = "you had 7 vibes"
-                let colors: [UIColor] = [.magenta, .red, .systemIndigo]
+                let colors: [UIColor] = [.magenta, .systemRed, .systemIndigo]
                 
                 for color in colors {
                     let index = colors.firstIndex(of: color)!
