@@ -51,23 +51,19 @@ struct Provider: TimelineProvider {
             
             if item.count > 0 && item.count % 7 == 0 {
                 let text = "you had 7 vibes"
-                entries.append(.init(date: .now,
-                                     tracker: .init(vibe: .init(name: "⭐⭐ \(text) ⭐⭐",
-                                                                image: "",
-                                                                color: .init(uiColor: .magenta)),
-                                                    count: 0)))
+                let colors: [UIColor] = [.magenta, .red, .systemIndigo]
                 
-                entries.append(.init(date: .now + 0.8,
-                                     tracker: .init(vibe: .init(name: "⭐ \(text) ⭐",
-                                                                image: "",
-                                                                color: .init(uiColor: .red)),
-                                                    count: 0)))
-                
-                entries.append(.init(date: .now + 1.8,
-                                     tracker: .init(vibe: .init(name: text,
-                                                                image: "",
-                                                                color: .init(uiColor: .systemIndigo)),
-                                                    count: 0)))
+                for color in colors {
+                    let index = colors.firstIndex(of: color)!
+                    let count = colors.count - 1 - index
+                    let padding = String(repeating: "⭐", count: count)
+                    let time: CGFloat = 0.8 * CGFloat(index)
+                    entries.append(.init(date: .now + time,
+                                         tracker: .init(vibe: .init(name: "\(padding) \(text) \(padding)",
+                                                                    image: "",
+                                                                    color: .init(uiColor: color)),
+                                                        count: 0)))
+                }
             }
             
             let timeline = Timeline(entries: entries,
